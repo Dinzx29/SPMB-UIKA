@@ -54,18 +54,22 @@ const Navbar = () => {
 
   const isActive = (path) => {
     if (path === '/admin/dashboard') return currentPath === path;
+    // Halaman Leads Maukuliah (/admin/list_leads) merupakan bagian dari menu Pendaftar
+    if (path === '/admin/pendaftar') {
+      return currentPath.startsWith('/admin/pendaftar') || currentPath.startsWith('/admin/list_leads');
+    }
     return currentPath.startsWith(path);
   };
 
   const getLinkClass = (path) => {
     return isActive(path)
-      ? 'text-white border-b-[2px] border-white pb-1'
+      ? 'text-white border-b-[2px] border-white pb-1 font-medium'
       : 'text-white/95 border-b-[2px] border-transparent hover:text-white pb-1';
   };
 
   const getDivClass = (path) => {
     return isActive(path)
-      ? 'text-white border-b-[2px] border-white pb-1 cursor-pointer'
+      ? 'text-white border-b-[2px] border-white pb-1 cursor-pointer font-medium'
       : 'text-white/95 border-b-[2px] border-transparent hover:text-white pb-1 cursor-pointer';
   };
 
@@ -115,17 +119,14 @@ const Navbar = () => {
         {/* Kanan: Ikon & Profil */}
         <div className="flex items-center gap-8">
           
-          {/* 🔥 Grup Ikon dengan Efek Hover Lingkaran */}
           <div className="flex items-center gap-2 text-white/90">
             
-            {/* Bell Icon */}
             <button className="p-2.5 rounded-full hover:bg-white/20 hover:text-white transition-all duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path fillRule="evenodd" d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z" clipRule="evenodd" />
               </svg>
             </button>
 
-            {/* Home Icon */}
             <button className="p-2.5 rounded-full hover:bg-white/20 hover:text-white transition-all duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
@@ -133,14 +134,12 @@ const Navbar = () => {
               </svg>
             </button>
 
-            {/* Chat Icon */}
             <button className="p-2.5 rounded-full hover:bg-white/20 hover:text-white transition-all duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path fillRule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 01-.814 1.686.75.75 0 00.44 1.223zM8.25 10.875a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM10.875 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zm4.875-1.125a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z" clipRule="evenodd" />
               </svg>
             </button>
 
-            {/* Grid Icon */}
             <button className="p-2.5 rounded-full hover:bg-white/20 hover:text-white transition-all duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path fillRule="evenodd" d="M3 6a3 3 0 013-3h2.25a3 3 0 013 3v2.25a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm9.75 0a3 3 0 013-3H18a3 3 0 013 3v2.25a3 3 0 01-3 3h-2.25a3 3 0 01-3-3V6zM3 15.75a3 3 0 013-3h2.25a3 3 0 013 3V18a3 3 0 01-3 3H6a3 3 0 01-3-3v-2.25zm9.75 0a3 3 0 013-3H18a3 3 0 013 3V18a3 3 0 01-3 3h-2.25a3 3 0 01-3-3v-2.25z" clipRule="evenodd" />
@@ -148,7 +147,6 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* 🔥 TOMBOL PROFIL dengan Efek Hover Lingkaran */}
           <div 
             ref={profileRef}
             className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-white/20 transition-all duration-200"
@@ -176,7 +174,8 @@ const Navbar = () => {
             <div className="h-[36px] flex items-center">Pendaftar</div>
           </Link>
           
-          <Link to="#" className={`flex items-center ${getLinkClass('/one-day')}`}>
+          {/* 🔥 LINK ONE DAY SERVICE DISAMBUNGKAN KE RUTE */}
+          <Link to="/admin/one_day_service" className={`flex items-center ${getLinkClass('/admin/one_day_service')}`}>
             <div className="h-[36px] flex flex-col justify-center text-center leading-[1.15]">
               <span>One Day Service</span>
             </div>
@@ -244,7 +243,6 @@ const Navbar = () => {
             right: `${profilePos.right}px`,
           }}
         >
-          {/* Header Profil */}
           <div className="p-6 flex items-center gap-4 bg-white">
             <div className="w-[56px] h-[56px] rounded-full border border-gray-200 overflow-hidden shrink-0 bg-gray-50 p-0.5">
               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="User" className="w-full h-full object-cover rounded-full" />
@@ -261,7 +259,6 @@ const Navbar = () => {
 
           <div className="border-t border-gray-100 mx-6"></div>
 
-          {/* Menu List */}
           <div className="p-4 space-y-1 bg-white">
             <div className="flex items-center justify-between px-3 py-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group">
               <div className="flex items-center gap-4 text-gray-600 group-hover:text-gray-900">

@@ -6,7 +6,7 @@ import SearchableSelect from '../../components/ui/SearchableSelect';
 import StatCard from '../../components/ui/StatCard';
 import PendaftarChart from '../../components/ui/PendaftarChart';
 import TabelInfoGrafik from '../../components/ui/TabelInfoGrafik';
-import TabelFunnelPendaftaran from '../../components/ui/TabelFunnelPendaftaran'; // ✅ Import komponen funnel
+import TabelFunnelPendaftaran from '../../components/ui/TabelFunnelPendaftaran';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -16,6 +16,10 @@ const Dashboard = () => {
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [showPanduan, setShowPanduan] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(true);
+
+  // 🔥 STATE UNTUK POP-UP RESET
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   const [activeTab, setActiveTab] = useState('Statistik');
 
@@ -25,6 +29,79 @@ const Dashboard = () => {
   const [gelombang, setGelombang] = useState('-- Semua Gelombang --');
   const [sistemKuliah, setSistemKuliah] = useState('-- Semua Sistem Kuliah --');
   const [prodi, setProdi] = useState('-- Semua Unit / Program Studi --');
+
+  // 🔥 STATE UNTUK PANDUAN & PROGRESS
+  const [panduanData, setPanduanData] = useState([
+    { id: 1, title: 'Setting Pendaftaran', desc: 'Pastikan semua data master pendaftaran telah terdata lengkap, termasuk input untuk gelombang, jalur pendaftaran, sistem kuliah, dan jenis program', done: false, loading: false, date: null },
+    { id: 2, title: 'Setting Seleksi', desc: 'Silahkan setting seleksi untuk pendaftar.', done: false, loading: false, date: null },
+    { id: 3, title: 'Jalur Pendaftaran', desc: 'Silakan buat jalur pendaftaran yang akan dibuka.', done: false, loading: false, date: null },
+    { id: 4, title: 'Biaya Formulir', desc: 'Jika berbayar, silakan setting nominal biaya pendaftaran Penerimaan Mahasiswa Baru.', done: false, loading: false, date: null },
+    { id: 5, title: 'Prodi yang dibuka', desc: 'Silakan setting Prodi yang dibuka pada tiap jalur Penerimaan Mahasiswa Baru.', done: false, loading: false, date: null },
+    { id: 6, title: 'Syarat Pendaftaran', desc: 'Silakan buat syarat yang perlu dilampirkan pendaftar sesuai dengan jalur PMB yang dibuka.', done: false, loading: false, date: null },
+    { id: 7, title: 'Jadwal Seleksi', desc: 'Silakan buat jadwal agar pendaftar mengetahui jadwal seleksi PMB.', done: false, loading: false, date: null },
+    { id: 8, title: 'Validasi Berkas Pendaftar', desc: 'Silakan lakukan validasi berkas yang sudah dikumpulkan pendaftar.', done: false, loading: false, date: null },
+    { id: 9, title: 'Seleksi dan Input Nilai Seleksi', desc: 'Silakan input hasil seleksi pendaftar, dapat berupa nilai atau keterangan.', done: false, loading: false, date: null },
+    { id: 10, title: 'Kelulusan/Rekomendasi Prodi', desc: 'Silakan setting rekomendasi Prodi atau kelulusan pendaftar untuk mendata Prodi yang menerima pendaftar.', done: false, loading: false, date: null },
+    { id: 11, title: 'Validasi Berkas Daftar Ulang', desc: 'Silakan validasi berkas persyaratan daftar ulang yang telah di-upload pendaftar.', done: false, loading: false, date: null },
+    { id: 12, title: 'Generate NIM & Mahasiswa', desc: 'Silakan generate NIM dan ekspor data mahasiswa baru, agar data siap dikirim ke modul akademik.', done: false, loading: false, date: null },
+  ]);
+
+  // 🔥 FUNGSI UNTUK MENANGANI CHECKLIST
+  const handleChecklist = (id) => {
+    setShowSuccessAlert(true);
+
+    setPanduanData((prev) => 
+      prev.map((item) => {
+        if (item.id === id) {
+          if (item.done) {
+            return { ...item, done: false, date: null };
+          }
+          return { ...item, loading: true };
+        }
+        return item;
+      })
+    );
+
+    setTimeout(() => {
+      setPanduanData((prev) => 
+        prev.map((item) => {
+          if (item.id === id && item.loading) {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            const formattedDate = now.toLocaleDateString('id-ID', options).replace('.', ':');
+
+            return { ...item, loading: false, done: true, date: `Diselesaikan pada ${formattedDate}` };
+          }
+          return item;
+        })
+      );
+    }, 1000);
+  };
+
+  // 🔥 FUNGSI TANDAI SELESAI SEMUA
+  const handleMarkAllDone = () => {
+    setShowSuccessAlert(true);
+    setPanduanData((prev) => 
+      prev.map((item) => {
+        if (!item.done) {
+          const now = new Date();
+          const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+          const formattedDate = now.toLocaleDateString('id-ID', options).replace('.', ':');
+          return { ...item, done: true, loading: false, date: `Diselesaikan pada ${formattedDate}` };
+        }
+        return item;
+      })
+    );
+  };
+
+  // 🔥 FUNGSI EKSEKUSI RESET
+  const executeReset = () => {
+    setPanduanData((prev) => 
+      prev.map((item) => ({ ...item, done: false, loading: false, date: null }))
+    );
+    setShowSuccessAlert(true);
+    setIsResetModalOpen(false); 
+  };
 
   const generatePeriodeOptions = () => {
     const currentYear = new Date().getFullYear();
@@ -42,72 +119,22 @@ const Dashboard = () => {
   const gelombangOptions = ["-- Semua Gelombang --", "Gelombang 1", "Gelombang 2", "Gelombang 3", "KIP A", "KIP B", "KIP C"];
   const sistemKuliahOptions = ["-- Semua Sistem Kuliah --", "Reguler", "Karyawan", "Karyawan RPL YAPE"];
   const prodiOptions = [
-    "-- Semua Unit / Program Studi --",
-    "Universitas Ibn Khaldun",
-    "-- Fakultas Keguruan Dan Ilmu Pendidikan",
-    "--- S1 - Pendidikan Vokasional Desain Fashion",
-    "--- S1 - Pendidikan Matematika",
-    "--- S1 - Teknologi Pendidikan",
-    "--- S1 - Pendidikan Masyarakat",
-    "--- Prof - Pendidikan Profesi Guru",
-    "--- S1 - Pendidikan Bahasa Inggris",
-    "-- Fakultas Hukum",
-    "--- S2 - Hukum Bisnis (2)",
-    "--- S1 - Ilmu Hukum",
-    "-- Fakultas Ekonomi Dan Bisnis",
-    "--- S1 - Manajemen",
-    "--- S1 - Bisnis Digital",
-    "--- S1 - Akuntansi",
-    "--- S1 - Perdangan Internasional",
-    "-- Fakultas Agama Islam",
-    "--- S1 - Ekonomi Syariah",
-    "--- S1 - Manajemen Haji Dan Umroh",
-    "--- S1 - Bimbingan Dan Konseling Pendidikan Islam",
-    "--- S1 - Komunikasi Dan Penyiaran Islam",
-    "--- S1 - Hukum Keluarga Islam",
-    "--- S1 - Ilmu Al-Qur'an Dan Tafsir",
-    "--- S1 - Pendidikan Agama Islam",
-    "--- S1 - Pendidikan Guru Madrasah Ibtidaiyah",
-    "-- Fakultas Teknik Dan Sains",
-    "--- S1 - Teknik Elektro",
-    "--- S1 - Teknik Mesin",
-    "--- S1 - Teknik Sipil",
-    "--- S1 - Ilmu Lingkungan",
-    "--- S1 - Rekayasa Pertanian Dan Biosistem",
-    "--- S1 - Teknik Informatika",
-    "--- S1 - Sistem Informasi",
-    "-- Sekolah Pascasarjana",
-    "--- S3 - Ekonomi Syariah (S3)",
-    "--- S2 - Ekonomi Syariah (S2)",
-    "--- S2 - Manajemen (S2)",
-    "--- S2 - Komunikasi Dan Penyiaran Islam (S2)",
-    "--- S3 - Pendidikan Agama Islam (S3)",
-    "--- S2 - Teknologi Pendidikan(S2)",
-    "--- S2 - Pendidikan Agama Islam (S2)",
-    "-- Fakultas Ilmu Kesehatan",
-    "--- S1 - Kesehatan Masyarakat",
-    "--- S1 - Gizi",
-  ];
-
-  const panduanData = [
-    { id: 1, title: 'Setting Pendaftaran', desc: 'Pastikan semua data master pendaftaran telah terdata lengkap, termasuk input untuk gelombang, jalur pendaftaran, sistem kuliah, dan jenis program' },
-    { id: 2, title: 'Setting Seleksi', desc: 'Silahkan setting seleksi untuk pendaftar.' },
-    { id: 3, title: 'Jalur Pendaftaran', desc: 'Silakan buat jalur pendaftaran yang akan dibuka.' },
-    { id: 4, title: 'Biaya Formulir', desc: 'Jika berbayar, silakan setting nominal biaya pendaftaran Penerimaan Mahasiswa Baru.' },
-    { id: 5, title: 'Prodi yang dibuka', desc: 'Silakan setting Prodi yang dibuka pada tiap jalur Penerimaan Mahasiswa Baru.' },
-    { id: 6, title: 'Syarat Pendaftaran', desc: 'Silakan buat syarat yang perlu dilampirkan pendaftar sesuai dengan jalur PMB yang dibuka.' },
-    { id: 7, title: 'Jadwal Seleksi', desc: 'Silakan buat jadwal agar pendaftar mengetahui jadwal seleksi PMB.' },
-    { id: 8, title: 'Validasi Berkas Pendaftar', desc: 'Silakan lakukan validasi berkas yang sudah dikumpulkan pendaftar.' },
-    { id: 9, title: 'Seleksi dan Input Nilai Seleksi', desc: 'Silakan input hasil seleksi pendaftar, dapat berupa nilai atau keterangan.' },
-    { id: 10, title: 'Kelulusan/Rekomendasi Prodi', desc: 'Silakan setting rekomendasi Prodi atau kelulusan pendaftar untuk mendata Prodi yang menerima pendaftar.' },
-    { id: 11, title: 'Validasi Berkas Daftar Ulang', desc: 'Silakan validasi berkas persyaratan daftar ulang yang telah di-upload pendaftar.' },
-    { id: 12, title: 'Generate NIM & Mahasiswa', desc: 'Silakan generate NIM dan ekspor data mahasiswa baru, agar data siap dikirim ke modul akademik.' },
+    "-- Semua Unit / Program Studi --", "Universitas Ibn Khaldun", "-- Fakultas Keguruan Dan Ilmu Pendidikan",
+    "--- S1 - Pendidikan Vokasional Desain Fashion", "--- S1 - Pendidikan Matematika", "--- S1 - Teknologi Pendidikan", "--- S1 - Pendidikan Masyarakat", "--- Prof - Pendidikan Profesi Guru", "--- S1 - Pendidikan Bahasa Inggris",
+    "-- Fakultas Hukum", "--- S2 - Hukum Bisnis (2)", "--- S1 - Ilmu Hukum",
+    "-- Fakultas Ekonomi Dan Bisnis", "--- S1 - Manajemen", "--- S1 - Bisnis Digital", "--- S1 - Akuntansi", "--- S1 - Perdangan Internasional",
+    "-- Fakultas Agama Islam", "--- S1 - Ekonomi Syariah", "--- S1 - Manajemen Haji Dan Umroh", "--- S1 - Bimbingan Dan Konseling Pendidikan Islam", "--- S1 - Komunikasi Dan Penyiaran Islam", "--- S1 - Hukum Keluarga Islam", "--- S1 - Ilmu Al-Qur'an Dan Tafsir", "--- S1 - Pendidikan Agama Islam", "--- S1 - Pendidikan Guru Madrasah Ibtidaiyah",
+    "-- Fakultas Teknik Dan Sains", "--- S1 - Teknik Elektro", "--- S1 - Teknik Mesin", "--- S1 - Teknik Sipil", "--- S1 - Ilmu Lingkungan", "--- S1 - Rekayasa Pertanian Dan Biosistem", "--- S1 - Teknik Informatika", "--- S1 - Sistem Informasi",
+    "-- Sekolah Pascasarjana", "--- S3 - Ekonomi Syariah (S3)", "--- S2 - Ekonomi Syariah (S2)", "--- S2 - Manajemen (S2)", "--- S2 - Komunikasi Dan Penyiaran Islam (S2)", "--- S3 - Pendidikan Agama Islam (S3)", "--- S2 - Teknologi Pendidikan(S2)", "--- S2 - Pendidikan Agama Islam (S2)",
+    "-- Fakultas Ilmu Kesehatan", "--- S1 - Kesehatan Masyarakat", "--- S1 - Gizi",
   ];
 
   const tabs = [
     'Statistik', 'Info Grafik', 'Funnel Pendaftaran', 'Funnel Bulanan',
     'Mahasiswa', 'Wilayah', 'Sekolah', 'Seleksi', 'Kuesioner', 'Orang Tua'
   ];
+
+  const totalDone = panduanData.filter(item => item.done).length;
 
   useEffect(() => {
     if (location.state?.justLoggedIn) {
@@ -116,11 +143,6 @@ const Dashboard = () => {
       return () => clearTimeout(timer);
     }
   }, [location.state]);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
 
   return (
     <div className="relative flex flex-col gap-5 w-full font-sans bg-[#f5f6f8] p-5 min-h-screen">
@@ -138,18 +160,53 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* OVERLAY GELAP */}
+      {/* OVERLAY GELAP (DRAWER) */}
       {isDrawerOpen && (
         <div className="fixed inset-0 bg-black/40 z-[60] transition-opacity" onClick={() => setIsDrawerOpen(false)}></div>
       )}
 
-      {/* PANEL SAMPING (DRAWER PANDUAN) */}
-      <div className={`fixed top-0 right-0 h-full w-[450px] bg-white z-[70] shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      {/* 🔥 MODAL POP-UP RESET (EFEK FADE STANDAR) */}
+      {isResetModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center animate-fade-in"
+          onClick={() => setIsResetModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-[500px] text-center animate-fade-in"
+            onClick={(e) => e.stopPropagation()} 
+          >
+            <h3 className="text-[22px] font-bold text-gray-900 mb-3 leading-snug">
+              Yakin ingin reset check list<br />Penerimaan Mahasiswa Baru (PMB)?
+            </h3>
+            <p className="text-[14px] text-gray-600 mb-8 leading-relaxed px-4">
+              Setiap tahapan yang sudah anda tandai selesai akan terhapus, tetapi tidak dengan data yang telah di isi.
+            </p>
+            <div className="flex justify-center gap-4">
+              <button 
+                onClick={() => setIsResetModalOpen(false)}
+                className="px-8 py-2.5 rounded-lg border-2 border-[#3b82f6] text-[#3b82f6] font-bold text-[15px] hover:bg-blue-50 transition-colors w-[160px]"
+              >
+                Batalkan
+              </button>
+              <button 
+                onClick={executeReset}
+                className="px-8 py-2.5 rounded-lg bg-[#3b82f6] text-white font-bold text-[15px] hover:bg-[#2563eb] transition-colors shadow-md w-[160px]"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🔥 PANEL SAMPING (DRAWER PANDUAN) */}
+      <div className={`fixed top-0 right-0 h-full w-[500px] bg-white z-[70] shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className={`absolute top-1/2 -translate-y-1/2 -left-10 transition-all duration-300 ${isDrawerOpen ? 'opacity-100' : 'opacity-0'}`}>
           <button onClick={() => setIsDrawerOpen(false)} className="bg-[#047857] hover:bg-[#035e44] text-white p-2 rounded-l-lg shadow-lg transition-all duration-300">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
           </button>
         </div>
+        
         <div className="p-6 border-b border-gray-200 flex justify-between items-start">
           <div>
             <h3 className="text-[22px] font-bold text-gray-900 mb-2">Penerimaan Mahasiswa Baru (PMB)</h3>
@@ -159,24 +216,114 @@ const Dashboard = () => {
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
+
         <div className="px-6 py-3 flex justify-between items-center border-b border-gray-100">
-          <button className="flex items-center gap-1.5 text-[13px] text-red-500 font-medium hover:underline"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>Reset</button>
-          <button className="text-[13px] text-blue-600 font-medium hover:underline">Tandai Selesai Semua</button>
+          <button 
+            onClick={() => setIsResetModalOpen(true)} 
+            className="flex items-center gap-1.5 text-[13px] text-red-500 font-medium hover:underline"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>Reset
+          </button>
+          <button onClick={handleMarkAllDone} className="text-[13px] text-blue-600 font-medium hover:underline">
+            Tandai Selesai Semua
+          </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="relative border-l-2 border-gray-200 ml-3 space-y-8 pb-4">
-            {panduanData.map((item) => (
-              <div key={item.id} className="relative pl-6">
-                <div className="absolute -left-[17px] top-0 w-8 h-8 bg-white border-2 border-blue-400 text-blue-500 rounded-full flex items-center justify-center font-bold text-sm">{item.id}</div>
-                <div className="flex justify-between items-start">
-                  <div className="pr-4">
-                    <h4 className="text-[15px] font-bold text-blue-600 mb-1">{item.title}</h4>
-                    <p className="text-[13px] text-gray-500 leading-relaxed">{item.desc}</p>
-                  </div>
-                  <input type="checkbox" className="w-5 h-5 mt-1 accent-blue-500 border-gray-300 rounded cursor-pointer shrink-0" />
+
+        <div className="flex-1 overflow-y-auto p-6 bg-[#f8fafc]">
+          
+          {/* ALERT BANNER JIKA SEMUA SELESAI */}
+          {totalDone === panduanData.length && showSuccessAlert && (
+            <div className="mb-6 bg-[#f0fdf4] border border-[#bbf7d0] rounded-lg p-4 flex items-start justify-between shadow-sm animate-fade-in">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-[#10b981] flex items-center justify-center shrink-0 mt-0.5">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
                 </div>
+                <p className="text-[14px] text-[#065f46] font-medium leading-relaxed">
+                  Selamat, Anda telah menyelesaikan semua tahapan Penerimaan Mahasiswa Baru (PMB).
+                </p>
               </div>
-            ))}
+              <button 
+                onClick={() => setShowSuccessAlert(false)}
+                className="text-[#10b981] hover:text-[#047857] p-1"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+          )}
+
+          <div className="relative">
+            {panduanData.map((item, index) => {
+              return (
+                <div key={item.id} className="relative pb-6 flex gap-4">
+                  
+                  {index !== panduanData.length - 1 && (
+                    <div className={`absolute left-[19px] top-[38px] bottom-0 w-0 border-l-2 border-dashed ${item.done ? 'border-green-300' : 'border-gray-300'}`}></div>
+                  )}
+
+                  <div className="relative z-10 shrink-0">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-[15px] border-2 shadow-sm
+                      ${item.done 
+                        ? 'bg-white border-green-500 text-green-600' 
+                        : item.loading 
+                        ? 'bg-white border-blue-500 text-blue-600'
+                        : 'bg-[#f0f7ff] border-blue-200 text-blue-600'
+                      }`}
+                    >
+                      {item.id}
+                    </div>
+                  </div>
+
+                  <div className={`flex-1 rounded-xl p-4 transition-all duration-300 border
+                    ${item.done 
+                      ? 'bg-white border-gray-200 shadow-sm opacity-80' 
+                      : 'bg-white border-blue-100 shadow-md'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <div className="flex items-center gap-3">
+                        <h4 className={`text-[15px] font-bold ${item.done ? 'text-gray-700' : 'text-blue-600'}`}>
+                          {item.title}
+                        </h4>
+                        {item.done && (
+                          <span className="bg-[#e6f4ea] text-[#10b981] text-[11px] font-bold px-2 py-0.5 rounded-md">
+                            Done
+                          </span>
+                        )}
+                      </div>
+
+                      <button 
+                        onClick={() => handleChecklist(item.id)}
+                        disabled={item.loading}
+                        className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 shrink-0 mt-0.5
+                          ${item.done 
+                            ? 'bg-[#3b82f6] border-[#3b82f6] text-white' 
+                            : 'bg-white border-gray-300 text-transparent hover:border-blue-500'
+                          }`}
+                      >
+                        {item.loading ? (
+                          <svg className="w-4 h-4 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : item.done ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                        ) : null}
+                      </button>
+                    </div>
+                    
+                    <p className={`text-[13px] leading-relaxed mb-2 ${item.done ? 'text-gray-500' : 'text-gray-600'}`}>
+                      {item.desc}
+                    </p>
+
+                    {item.done && item.date && (
+                      <p className="text-[12px] text-gray-400 italic font-medium">
+                        {item.date}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -224,11 +371,15 @@ const Dashboard = () => {
                   <h4 className="font-bold text-gray-900 text-[12px] leading-tight">Penerimaan Mahasiswa<br/>Baru (PMB)</h4>
                 </div>
                 <div className="flex justify-between items-center text-[10px] mb-1 text-gray-500">
-                  <span>Progres</span><span>Belum Mulai</span>
+                  <span>Progres</span><span>{totalDone} dari {panduanData.length} tahap</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-1 mb-1"><div className="bg-gray-300 h-1 rounded-full" style={{ width: '0%' }}></div></div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1.5">
+                  <div className={`h-1.5 rounded-full transition-all duration-500 ${totalDone === panduanData.length ? 'bg-[#10b981]' : 'bg-[#f59e0b]'}`} style={{ width: `${(totalDone / panduanData.length) * 100}%` }}></div>
+                </div>
                 <div className="text-right">
-                  <button onClick={() => setIsDrawerOpen(true)} className="text-[#047857] font-semibold text-[11px] hover:underline">Mulai</button>
+                  <button onClick={() => setIsDrawerOpen(true)} className={`font-semibold text-[11px] hover:underline ${totalDone === panduanData.length ? 'text-[#10b981]' : 'text-[#047857]'}`}>
+                    {totalDone === panduanData.length ? 'Selesai' : 'Proses'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -299,7 +450,7 @@ const Dashboard = () => {
           <div className="p-6">
             {activeTab === 'Statistik' && <PendaftarChart />}
             {activeTab === 'Info Grafik' && <TabelInfoGrafik />}
-            {activeTab === 'Funnel Pendaftaran' && <TabelFunnelPendaftaran />} {/* ✅ Integrasi funnel */}
+            {activeTab === 'Funnel Pendaftaran' && <TabelFunnelPendaftaran />}
             {activeTab !== 'Statistik' && activeTab !== 'Info Grafik' && activeTab !== 'Funnel Pendaftaran' && (
               <div className="flex items-center justify-center h-[400px] text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-300">
                 <p>Konten untuk <strong>{activeTab}</strong> belum tersedia.</p>
