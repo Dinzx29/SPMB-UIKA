@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 /* Mematikan ikon mata bawaan browser di input password */
 input[type="password"]::-ms-reveal,
@@ -16,20 +15,10 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #f8fafc; /* Warna background abu-abu sangat terang */
+  background-color: #f8fafc;
 }
 
 /* Sembunyikan scrollbar menu navbar tapi tetap bisa digeser */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* ... kode CSS Anda sebelumnya ... */
-
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }

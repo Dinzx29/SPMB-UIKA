@@ -1,16 +1,18 @@
+// Dashboard.jsx
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import SearchableSelect from '../../components/ui/SearchableSelect'; 
+import SearchableSelect from '../../components/ui/SearchableSelect';
 import StatCard from '../../components/ui/StatCard';
 import PendaftarChart from '../../components/ui/PendaftarChart';
 import TabelInfoGrafik from '../../components/ui/TabelInfoGrafik';
+import TabelFunnelPendaftaran from '../../components/ui/TabelFunnelPendaftaran'; // ✅ Import komponen funnel
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [showPanduan, setShowPanduan] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -43,48 +45,48 @@ const Dashboard = () => {
     "-- Semua Unit / Program Studi --",
     "Universitas Ibn Khaldun",
     "-- Fakultas Keguruan Dan Ilmu Pendidikan",
-     "--- S1 - Pendidikan Vokasional Desain Fashion",
-     "--- S1 - Pendidikan Matematika",
-     "--- S1 - Teknologi Pendidikan",
-     "--- S1 - Pendidikan Masyarakat",
-     "--- Prof - Pendidikan Profesi Guru",
-     "--- S1 - Pendidikan Bahasa Inggris",
+    "--- S1 - Pendidikan Vokasional Desain Fashion",
+    "--- S1 - Pendidikan Matematika",
+    "--- S1 - Teknologi Pendidikan",
+    "--- S1 - Pendidikan Masyarakat",
+    "--- Prof - Pendidikan Profesi Guru",
+    "--- S1 - Pendidikan Bahasa Inggris",
     "-- Fakultas Hukum",
-     "--- S2 - Hukum Bisnis (2)",
-     "--- S1 - Ilmu Hukum",
+    "--- S2 - Hukum Bisnis (2)",
+    "--- S1 - Ilmu Hukum",
     "-- Fakultas Ekonomi Dan Bisnis",
-     "--- S1 - Manajemen",
-     "--- S1 - Bisnis Digital",
-     "--- S1 - Akuntansi",
-     "--- S1 - Perdangan Internasional",
+    "--- S1 - Manajemen",
+    "--- S1 - Bisnis Digital",
+    "--- S1 - Akuntansi",
+    "--- S1 - Perdangan Internasional",
     "-- Fakultas Agama Islam",
-     "--- S1 - Ekonomi Syariah",
-     "--- S1 - Manajemen Haji Dan Umroh",
-     "--- S1 - Bimbingan Dan Konseling Pendidikan Islam",
-     "--- S1 - Komunikasi Dan Penyiaran Islam",
-     "--- S1 - Hukum Keluarga Islam",
-     "--- S1 - Ilmu Al-Qur'an Dan Tafsir",
-     "--- S1 - Pendidikan Agama Islam",
-     "--- S1 - Pendidikan Guru Madrasah Ibtidaiyah",
+    "--- S1 - Ekonomi Syariah",
+    "--- S1 - Manajemen Haji Dan Umroh",
+    "--- S1 - Bimbingan Dan Konseling Pendidikan Islam",
+    "--- S1 - Komunikasi Dan Penyiaran Islam",
+    "--- S1 - Hukum Keluarga Islam",
+    "--- S1 - Ilmu Al-Qur'an Dan Tafsir",
+    "--- S1 - Pendidikan Agama Islam",
+    "--- S1 - Pendidikan Guru Madrasah Ibtidaiyah",
     "-- Fakultas Teknik Dan Sains",
-     "--- S1 - Teknik Elektro",
-     "--- S1 - Teknik Mesin",
-     "--- S1 - Teknik Sipil",
-     "--- S1 - Ilmu Lingkungan",
-     "--- S1 - Rekayasa Pertanian Dan Biosistem",
-     "--- S1 - Teknik Informatika",
-     "--- S1 - Sistem Informasi",
+    "--- S1 - Teknik Elektro",
+    "--- S1 - Teknik Mesin",
+    "--- S1 - Teknik Sipil",
+    "--- S1 - Ilmu Lingkungan",
+    "--- S1 - Rekayasa Pertanian Dan Biosistem",
+    "--- S1 - Teknik Informatika",
+    "--- S1 - Sistem Informasi",
     "-- Sekolah Pascasarjana",
-     "--- S3 - Ekonomi Syariah (S3)",
-     "--- S2 - Ekonomi Syariah (S2)",
-     "--- S2 - Manajemen (S2)",
-     "--- S2 - Komunikasi Dan Penyiaran Islam (S2)",
-     "--- S3 - Pendidikan Agama Islam (S3)",
-     "--- S2 - Teknologi Pendidikan(S2)",
-     "--- S2 - Pendidikan Agama Islam (S2)",
+    "--- S3 - Ekonomi Syariah (S3)",
+    "--- S2 - Ekonomi Syariah (S2)",
+    "--- S2 - Manajemen (S2)",
+    "--- S2 - Komunikasi Dan Penyiaran Islam (S2)",
+    "--- S3 - Pendidikan Agama Islam (S3)",
+    "--- S2 - Teknologi Pendidikan(S2)",
+    "--- S2 - Pendidikan Agama Islam (S2)",
     "-- Fakultas Ilmu Kesehatan",
-     "--- S1 - Kesehatan Masyarakat",
-     "--- S1 - Gizi",
+    "--- S1 - Kesehatan Masyarakat",
+    "--- S1 - Gizi",
   ];
 
   const panduanData = [
@@ -103,7 +105,7 @@ const Dashboard = () => {
   ];
 
   const tabs = [
-    'Statistik', 'Info Grafik', 'Funnel Pendaftaran', 'Funnel Bulanan', 
+    'Statistik', 'Info Grafik', 'Funnel Pendaftaran', 'Funnel Bulanan',
     'Mahasiswa', 'Wilayah', 'Sekolah', 'Seleksi', 'Kuesioner', 'Orang Tua'
   ];
 
@@ -122,7 +124,7 @@ const Dashboard = () => {
 
   return (
     <div className="relative flex flex-col gap-5 w-full font-sans bg-[#f5f6f8] p-5 min-h-screen">
-      
+
       {/* TOAST NOTIFIKASI */}
       <div className={`fixed top-5 right-5 z-[100] transition-all duration-500 ease-in-out transform ${toast.show ? 'translate-x-0 opacity-100' : 'translate-x-[120%] opacity-0'}`}>
         <div className="bg-white rounded-lg shadow-xl border-l-4 border-emerald-500 p-4 flex items-center gap-3 min-w-[300px]">
@@ -180,7 +182,7 @@ const Dashboard = () => {
       </div>
 
       <div className="max-w-[1700px] w-full mx-auto flex flex-col gap-5">
-        
+
         {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
@@ -194,7 +196,7 @@ const Dashboard = () => {
               <span className="text-[16px] text-gray-400 font-thin">Selamat Datang di Sistem Informasi Penerimaan Mahasiswa Baru</span>
             </div>
           </div>
-          
+
           <div className="flex gap-3">
             <button onClick={() => setShowPanduan(!showPanduan)} className="flex items-center gap-2 bg-[#047857] hover:bg-[#035e44] text-white px-3.5 py-2 rounded text-[13px] font-medium transition-colors shadow-sm">
               {showPanduan ? (
@@ -203,7 +205,6 @@ const Dashboard = () => {
                 <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>Tampilkan Panduan</>
               )}
             </button>
-            {/* 🔥 TOMBOL LOGOUT DIHAPUS DARI SINI */}
           </div>
         </div>
 
@@ -278,15 +279,15 @@ const Dashboard = () => {
 
         {/* KOTAK STATISTIK & TAB NAVIGASI */}
         <div className="w-full bg-white rounded-lg shadow-sm border border-gray-200 mt-4 overflow-hidden">
-          
+
           <div className="flex flex-wrap gap-2 border-b border-gray-200 p-4 bg-gray-50">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`py-2 px-4 text-[14px] font-medium rounded-md transition-all duration-200 border ${
-                  activeTab === tab 
-                    ? 'bg-white border-emerald-500 text-emerald-600 shadow-sm' 
+                  activeTab === tab
+                    ? 'bg-white border-emerald-500 text-emerald-600 shadow-sm'
                     : 'bg-transparent border-transparent text-gray-600 hover:bg-gray-200 hover:text-gray-800'
                 }`}
               >
@@ -298,7 +299,8 @@ const Dashboard = () => {
           <div className="p-6">
             {activeTab === 'Statistik' && <PendaftarChart />}
             {activeTab === 'Info Grafik' && <TabelInfoGrafik />}
-            {activeTab !== 'Statistik' && activeTab !== 'Info Grafik' && (
+            {activeTab === 'Funnel Pendaftaran' && <TabelFunnelPendaftaran />} {/* ✅ Integrasi funnel */}
+            {activeTab !== 'Statistik' && activeTab !== 'Info Grafik' && activeTab !== 'Funnel Pendaftaran' && (
               <div className="flex items-center justify-center h-[400px] text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-300">
                 <p>Konten untuk <strong>{activeTab}</strong> belum tersedia.</p>
               </div>
