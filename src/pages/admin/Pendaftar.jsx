@@ -30,6 +30,46 @@ const Pendaftar = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isReviewAnimating, setIsReviewAnimating] = useState(false);
 
+  // STATE UNTUK MODAL KONFIRMASI SET KIP KULIAH
+  const [isKipModalOpen, setIsKipModalOpen] = useState(false);
+  const [isKipAnimating, setIsKipAnimating] = useState(false);
+
+  // STATE UNTUK MODAL KONFIRMASI SET FINALISASI
+  const [isFinalisasiModalOpen, setIsFinalisasiModalOpen] = useState(false);
+  const [isFinalisasiAnimating, setIsFinalisasiAnimating] = useState(false);
+
+  // STATE UNTUK MODAL UPDATE DATA PENDAFTAR
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isUpdateAnimating, setIsUpdateAnimating] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  // STATE UNTUK MODAL RESET PASSWORD PENDAFTAR
+  const [isResetPassModalOpen, setIsResetPassModalOpen] = useState(false);
+  const [isResetPassAnimating, setIsResetPassAnimating] = useState(false);
+
+  // STATE UNTUK CUSTOM ALERT POPUP (MENGGANTIKAN BROWSER ALERT "localhost:xxxx says")
+  const [alertModal, setAlertModal] = useState({
+    isOpen: false,
+    isAnimating: false,
+    title: 'Berhasil',
+    message: '',
+    type: 'success', // 'success' | 'warning' | 'info'
+  });
+
+  const showAlert = (message, title = 'Berhasil', type = 'success') => {
+    setAlertModal({ isOpen: true, isAnimating: false, title, message, type });
+    setTimeout(() => {
+      setAlertModal(prev => ({ ...prev, isAnimating: true }));
+    }, 40);
+  };
+
+  const closeAlert = () => {
+    setAlertModal(prev => ({ ...prev, isAnimating: false }));
+    setTimeout(() => {
+      setAlertModal(prev => ({ ...prev, isOpen: false }));
+    }, 250);
+  };
+
   const toolbarFilterOptions = [
     '-- Semua --', 'Foto Pendaftar', 'Nama & Kode Pendaftar', 'Jalur Pendaftaran',
     'Program Studi', 'Kontak', 'NIK / No. KTP', 'NIM', 'NIM Mahasiswa'
@@ -55,6 +95,50 @@ const Pendaftar = () => {
   const closeReviewModal = () => {
     setIsReviewAnimating(false);
     setTimeout(() => setIsReviewModalOpen(false), 500);
+  };
+
+  // LOGIKA BUKA/TUTUP MODAL SET KIP KULIAH
+  const openKipModal = () => {
+    setIsKipModalOpen(true);
+    setTimeout(() => setIsKipAnimating(true), 50);
+  };
+
+  const closeKipModal = () => {
+    setIsKipAnimating(false);
+    setTimeout(() => setIsKipModalOpen(false), 300);
+  };
+
+  // LOGIKA BUKA/TUTUP MODAL SET FINALISASI
+  const openFinalisasiModal = () => {
+    setIsFinalisasiModalOpen(true);
+    setTimeout(() => setIsFinalisasiAnimating(true), 50);
+  };
+
+  const closeFinalisasiModal = () => {
+    setIsFinalisasiAnimating(false);
+    setTimeout(() => setIsFinalisasiModalOpen(false), 300);
+  };
+
+  // LOGIKA BUKA/TUTUP MODAL UPDATE DATA PENDAFTAR
+  const openUpdateModal = () => {
+    setIsUpdateModalOpen(true);
+    setTimeout(() => setIsUpdateAnimating(true), 50);
+  };
+
+  const closeUpdateModal = () => {
+    setIsUpdateAnimating(false);
+    setTimeout(() => setIsUpdateModalOpen(false), 300);
+  };
+
+  // LOGIKA BUKA/TUTUP MODAL RESET PASSWORD PENDAFTAR
+  const openResetPassModal = () => {
+    setIsResetPassModalOpen(true);
+    setTimeout(() => setIsResetPassAnimating(true), 50);
+  };
+
+  const closeResetPassModal = () => {
+    setIsResetPassAnimating(false);
+    setTimeout(() => setIsResetPassModalOpen(false), 300);
   };
 
   const handleProdiChange = (value) => {
@@ -151,89 +235,89 @@ const Pendaftar = () => {
 
   // DUMMY DATA PENDAFTAR (TABEL UTAMA - WARNA DAN DATA PERSIS SEPERTI DI FOTO)
   const pendaftarData = [
-    { 
-      id: 1, 
-      inisial: 'UB', 
-      warna: 'bg-[#4a3838]', 
-      isFoto: false, 
-      nama: 'UBAIDILLAH', 
-      kode: '4112560008', 
-      jalur: '2025 Ganjil - Gelombang 1', 
-      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan', 
-      prodi: ['S2 - Pendidikan Agama Islam (S2)'], 
-      status: ['Belum Finalisasi', 'Belum Diterima Prodi'], 
-      email: 'ud659454@gmail.com', 
-      telepon: '085810582733' 
+    {
+      id: 1,
+      inisial: 'UB',
+      warna: 'bg-[#4a3838]',
+      isFoto: false,
+      nama: 'UBAIDILLAH',
+      kode: '4112560008',
+      jalur: '2025 Ganjil - Gelombang 1',
+      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan',
+      prodi: ['S2 - Pendidikan Agama Islam (S2)'],
+      status: ['Belum Finalisasi', 'Belum Diterima Prodi'],
+      email: 'ud659454@gmail.com',
+      telepon: '085810582733'
     },
-    { 
-      id: 2, 
-      inisial: 'RK', 
-      warna: 'bg-[#1b5e52]', 
-      isFoto: false, 
-      nama: 'RICKA KRISNAWATI', 
-      kode: '4112560007', 
-      jalur: '2025 Ganjil - Gelombang 1', 
-      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan', 
-      prodi: ['S2 - Ekonomi Syariah (S2)'], 
-      status: ['Belum Finalisasi', 'Belum Diterima Prodi'], 
-      email: 'rickakrisnawati42@gmail.com', 
-      telepon: '081380576099' 
+    {
+      id: 2,
+      inisial: 'RK',
+      warna: 'bg-[#1b5e52]',
+      isFoto: false,
+      nama: 'RICKA KRISNAWATI',
+      kode: '4112560007',
+      jalur: '2025 Ganjil - Gelombang 1',
+      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan',
+      prodi: ['S2 - Ekonomi Syariah (S2)'],
+      status: ['Belum Finalisasi', 'Belum Diterima Prodi'],
+      email: 'rickakrisnawati42@gmail.com',
+      telepon: '081380576099'
     },
-    { 
-      id: 3, 
-      inisial: 'AS', 
-      warna: 'bg-[#28442e]', 
-      isFoto: false, 
-      nama: 'AHMAD SOGI', 
-      kode: '4112560006', 
-      jalur: '2025 Ganjil - Gelombang 1', 
-      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan', 
-      prodi: ['S2 - Pendidikan Agama Islam (S2)'], 
-      status: ['Belum Finalisasi', 'Belum Diterima Prodi'], 
-      email: 'ahmadsogi58@gmail.com', 
-      telepon: '085959516263' 
+    {
+      id: 3,
+      inisial: 'AS',
+      warna: 'bg-[#28442e]',
+      isFoto: false,
+      nama: 'AHMAD SOGI',
+      kode: '4112560006',
+      jalur: '2025 Ganjil - Gelombang 1',
+      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan',
+      prodi: ['S2 - Pendidikan Agama Islam (S2)'],
+      status: ['Belum Finalisasi', 'Belum Diterima Prodi'],
+      email: 'ahmadsogi58@gmail.com',
+      telepon: '085959516263'
     },
-    { 
-      id: 4, 
-      inisial: '', 
-      warna: '', 
-      isFoto: true, 
-      nama: 'AENUL YAKIN', 
-      kode: '4112560005', 
-      jalur: '2025 Ganjil - Gelombang 1', 
-      ketJalur: 'PASCASARJANA (S2) - Karyawan', 
-      prodi: ['S2 - Manajemen (S2)', 'S2 - Ekonomi Syariah (S2)', 'S2 - Teknologi Pendidikan (S2)'], 
-      status: ['Lulus', 'Sudah Daftar Ulang', 'Belum Memiliki NIM'], 
-      email: 'intanbariyah@gmail.com', 
-      telepon: '081382058641' 
+    {
+      id: 4,
+      inisial: '',
+      warna: '',
+      isFoto: true,
+      nama: 'AENUL YAKIN',
+      kode: '4112560005',
+      jalur: '2025 Ganjil - Gelombang 1',
+      ketJalur: 'PASCASARJANA (S2) - Karyawan',
+      prodi: ['S2 - Manajemen (S2)', 'S2 - Ekonomi Syariah (S2)', 'S2 - Teknologi Pendidikan (S2)'],
+      status: ['Lulus', 'Sudah Daftar Ulang', 'Belum Memiliki NIM'],
+      email: 'intanbariyah@gmail.com',
+      telepon: '081382058641'
     },
-    { 
-      id: 5, 
-      inisial: 'DD', 
-      warna: 'bg-[#b91c1c]', 
-      isFoto: false, 
-      nama: 'DIORA DICKY FAURILIO', 
-      kode: '4112560004', 
-      jalur: '2025 Ganjil - Gelombang 1', 
-      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan', 
-      prodi: ['S2 - Pendidikan Agama Islam (S2)'], 
-      status: ['Belum Diterima Prodi'], 
-      email: 'dioradiodf@gmail.com', 
-      telepon: '081931710836' 
+    {
+      id: 5,
+      inisial: 'DD',
+      warna: 'bg-[#b91c1c]',
+      isFoto: false,
+      nama: 'DIORA DICKY FAURILIO',
+      kode: '4112560004',
+      jalur: '2025 Ganjil - Gelombang 1',
+      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan',
+      prodi: ['S2 - Pendidikan Agama Islam (S2)'],
+      status: ['Belum Diterima Prodi'],
+      email: 'dioradiodf@gmail.com',
+      telepon: '081931710836'
     },
-    { 
-      id: 6, 
-      inisial: 'AI', 
-      warna: 'bg-[#1e3a8a]', 
-      isFoto: false, 
-      nama: 'ASEP IRVAN SOPANDI', 
-      kode: '4112560003', 
-      jalur: '2025 Ganjil - Gelombang 1', 
-      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan', 
-      prodi: ['S2 - Teknologi Pendidikan (S2)'], 
-      status: ['Belum Finalisasi', 'Belum Diterima Prodi'], 
-      email: 'afessirfan@gmail.com', 
-      telepon: '085794077317' 
+    {
+      id: 6,
+      inisial: 'AI',
+      warna: 'bg-[#1e3a8a]',
+      isFoto: false,
+      nama: 'ASEP IRVAN SOPANDI',
+      kode: '4112560003',
+      jalur: '2025 Ganjil - Gelombang 1',
+      ketJalur: 'RPL PEROLEHAN SKS (S2) - Karyawan',
+      prodi: ['S2 - Teknologi Pendidikan (S2)'],
+      status: ['Belum Finalisasi', 'Belum Diterima Prodi'],
+      email: 'afessirfan@gmail.com',
+      telepon: '085794077317'
     },
   ];
 
@@ -346,9 +430,8 @@ const Pendaftar = () => {
                           <button
                             key={idx}
                             onClick={() => { setPilihan(opt); setIsPilihanOpen(false); }}
-                            className={`flex items-center w-full text-left px-4 py-2 text-[13px] transition-colors ${
-                              pilihan === opt ? 'bg-[#3b82f6] text-white' : 'text-gray-700 hover:bg-gray-100'
-                            }`}
+                            className={`flex items-center w-full text-left px-4 py-2 text-[13px] transition-colors ${pilihan === opt ? 'bg-[#3b82f6] text-white' : 'text-gray-700 hover:bg-gray-100'
+                              }`}
                           >
                             <span className="w-5 shrink-0">{pilihan === opt && '✓'}</span>{opt}
                           </button>
@@ -492,9 +575,12 @@ const Pendaftar = () => {
 
             {/* Bagian Kanan: 4 Tombol Aksi (Tambah, Hapus, Aksi, Leads Maukuliah) */}
             <div className="flex flex-wrap items-center gap-2">
-              
+
               {/* Tombol Tambah (Hijau) */}
-              <button className="flex items-center gap-1.5 bg-[#00a65a] hover:bg-[#008d4c] text-white px-3.5 h-[34px] rounded-sm text-[13px] font-medium transition-colors shadow-xs">
+              <button 
+                onClick={() => navigate('/admin/data_pendaftar')}
+                className="flex items-center gap-1.5 bg-[#00a65a] hover:bg-[#008d4c] text-white px-3.5 h-[34px] rounded-sm text-[13px] font-medium transition-colors shadow-xs cursor-pointer"
+              >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" />
                 </svg>
@@ -528,11 +614,11 @@ const Pendaftar = () => {
                 {isAksiOpen && (
                   <div className="absolute z-50 mt-1 right-0 w-[250px] bg-white border border-gray-200 rounded-md shadow-lg py-1">
                     <button onClick={() => { openReviewModal(); setIsAksiOpen(false); }} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Review Data Pendaftar</button>
-                    <button onClick={() => setIsAksiOpen(false)} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Set KIP Kuliah</button>
-                    <button onClick={() => setIsAksiOpen(false)} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Set Finalisasi</button>
-                    <button onClick={() => setIsAksiOpen(false)} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Update Data Pendaftar</button>
-                    <button onClick={() => setIsAksiOpen(false)} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Reset Password Pendaftar</button>
-                    <button onClick={() => setIsAksiOpen(false)} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Import</button>
+                    <button onClick={() => { openKipModal(); setIsAksiOpen(false); }} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Set KIP Kuliah</button>
+                    <button onClick={() => { openFinalisasiModal(); setIsAksiOpen(false); }} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Set Finalisasi</button>
+                    <button onClick={() => { openUpdateModal(); setIsAksiOpen(false); }} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Update Data Pendaftar</button>
+                    <button onClick={() => { openResetPassModal(); setIsAksiOpen(false); }} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Reset Password Pendaftar</button>
+                    <button onClick={() => { showAlert('Fitur Import Data siap digunakan!', 'Informasi', 'info'); setIsAksiOpen(false); }} className="block w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-100">Import</button>
                   </div>
                 )}
               </div>
@@ -586,9 +672,8 @@ const Pendaftar = () => {
                   filteredData.map((item, index) => (
                     <tr
                       key={item.id}
-                      className={`border-b border-[#e5e7eb] transition-colors ${
-                        index % 2 === 0 ? 'bg-white hover:bg-[#f1f5f9]' : 'bg-[#f9fafc] hover:bg-[#f1f5f9]'
-                      }`}
+                      className={`border-b border-[#e5e7eb] transition-colors ${index % 2 === 0 ? 'bg-white hover:bg-[#f1f5f9]' : 'bg-[#f9fafc] hover:bg-[#f1f5f9]'
+                        }`}
                     >
                       {/* Checkbox */}
                       <td className="px-3 py-3.5 text-center border-r border-[#e5e7eb] align-top">
@@ -676,17 +761,18 @@ const Pendaftar = () => {
                       {/* Aksi (Tombol Mata Cyan & Tombol Tempat Sampah Merah) */}
                       <td className="px-3 py-3.5 text-center align-top">
                         <div className="flex justify-center items-center gap-1">
-                          <button 
-                            title="Detail Pendaftar" 
-                            className="bg-[#00c0ef] hover:bg-[#00acd6] text-white p-1.5 rounded-sm transition-colors shadow-xs"
+                          <button
+                            title="Detail Pendaftar"
+                            onClick={() => navigate('/admin/data_pendaftar')}
+                            className="bg-[#00c0ef] hover:bg-[#00acd6] text-white p-1.5 rounded-sm transition-colors shadow-xs cursor-pointer"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
                           </button>
-                          <button 
-                            title="Hapus Pendaftar" 
+                          <button
+                            title="Hapus Pendaftar"
                             className="bg-[#dd4b39] hover:bg-[#c23321] text-white p-1.5 rounded-sm transition-colors shadow-xs"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -750,17 +836,15 @@ const Pendaftar = () => {
 
       {/* MODAL REVIEW DATA PENDAFTAR */}
       {isReviewModalOpen && (
-        <div 
-          className={`fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 transition-opacity duration-500 ${
-            isReviewAnimating ? 'opacity-100' : 'opacity-0'
-          }`}
+        <div
+          className={`fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 transition-opacity duration-500 ${isReviewAnimating ? 'opacity-100' : 'opacity-0'
+            }`}
           onClick={closeReviewModal}
         >
-          <div 
-            className={`bg-white rounded-xl shadow-2xl w-full max-w-[900px] overflow-hidden flex flex-col transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-[85vh] ${
-              isReviewAnimating ? 'translate-y-0' : 'translate-y-[100px]'
-            }`}
-            onClick={(e) => e.stopPropagation()} 
+          <div
+            className={`bg-white rounded-xl shadow-2xl w-full max-w-[900px] overflow-hidden flex flex-col transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-[85vh] ${isReviewAnimating ? 'translate-y-0' : 'translate-y-[100px]'
+              }`}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Header Modal */}
             <div className="px-6 py-5 border-b border-gray-200 bg-gray-50 flex justify-between items-center shrink-0">
@@ -783,11 +867,10 @@ const Pendaftar = () => {
                 </thead>
                 <tbody>
                   {reviewData.map((row, index) => (
-                    <tr 
-                      key={index} 
-                      className={`border-b border-[#e2e8f0] transition-colors ${
-                        index % 2 === 0 ? 'bg-white hover:bg-[#f8fafc]' : 'bg-[#f8fafc] hover:bg-[#f1f5f9]'
-                      }`}
+                    <tr
+                      key={index}
+                      className={`border-b border-[#e2e8f0] transition-colors ${index % 2 === 0 ? 'bg-white hover:bg-[#f8fafc]' : 'bg-[#f8fafc] hover:bg-[#f1f5f9]'
+                        }`}
                     >
                       <td className="px-4 py-3 text-center text-gray-600 border-r border-[#e2e8f0]">{row.no}</td>
                       <td className="px-6 py-3 font-bold text-gray-800 border-r border-[#e2e8f0]">{row.status}</td>
@@ -801,13 +884,300 @@ const Pendaftar = () => {
 
             {/* Footer Modal */}
             <div className="p-4 bg-gray-50 border-t border-gray-200 flex justify-end shrink-0">
-              <button 
+              <button
                 onClick={closeReviewModal}
                 className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-[14px] rounded-lg transition-colors"
               >
                 Tutup
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL KONFIRMASI SET KIP KULIAH ===== */}
+      {isKipModalOpen && (
+        <div
+          className={`fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${isKipAnimating ? 'opacity-100' : 'opacity-0'}`}
+          onClick={closeKipModal}
+        >
+          <div
+            className={`bg-white rounded-xl shadow-2xl w-full max-w-[440px] overflow-hidden transform transition-all duration-300 ${isKipAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Body Modal */}
+            <div className="p-8 flex flex-col items-center text-center gap-4">
+              {/* Ikon Warning Oranye */}
+              <div className="w-14 h-14 rounded-full bg-[#fff3cd] border-2 border-[#f59e0b] flex items-center justify-center">
+                <svg className="w-7 h-7 text-[#f59e0b]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+              </div>
+              <h3 className="text-[20px] font-bold text-gray-900">Konfirmasi</h3>
+              <p className="text-[14px] text-gray-600">Apakah anda yakin akan Set KIP Kuliah All ?</p>
+            </div>
+
+            {/* Footer Tombol */}
+            <div className="px-8 pb-8 flex justify-center gap-3">
+              <button
+                onClick={closeKipModal}
+                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-[14px] transition-colors"
+              >
+                Batalkan
+              </button>
+              <button
+                onClick={() => {
+                  closeKipModal();
+                  setTimeout(() => {
+                    showAlert('Semua pendaftar berhasil di-set KIP Kuliah!', 'Berhasil', 'success');
+                  }, 300);
+                }}
+                className="px-8 py-2 bg-[#1b4f9c] hover:bg-[#163d7a] text-white rounded-lg font-medium text-[14px] transition-colors"
+              >
+                Ya, Yakin
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL KONFIRMASI SET FINALISASI ===== */}
+      {isFinalisasiModalOpen && (
+        <div
+          className={`fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${isFinalisasiAnimating ? 'opacity-100' : 'opacity-0'}`}
+          onClick={closeFinalisasiModal}
+        >
+          <div
+            className={`bg-white rounded-xl shadow-2xl w-full max-w-[440px] overflow-hidden transform transition-all duration-300 ${isFinalisasiAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Body Modal */}
+            <div className="p-8 flex flex-col items-center text-center gap-4">
+              {/* Ikon Warning Oranye/Kuning */}
+              <div className="w-14 h-14 rounded-full bg-[#fff3cd] border-2 border-[#f59e0b] flex items-center justify-center">
+                <svg className="w-7 h-7 text-[#f59e0b]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+              </div>
+              <h3 className="text-[20px] font-bold text-gray-900">Konfirmasi</h3>
+              <p className="text-[14px] text-gray-600">Apakah anda yakin akan Set Finalisasi All ?</p>
+            </div>
+
+            {/* Footer Tombol */}
+            <div className="px-8 pb-8 flex justify-center gap-3">
+              <button
+                onClick={closeFinalisasiModal}
+                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-[14px] transition-colors"
+              >
+                Batalkan
+              </button>
+              <button
+                onClick={() => {
+                  closeFinalisasiModal();
+                  setTimeout(() => {
+                    showAlert('Semua pendaftar berhasil di-set finalisasi!', 'Berhasil', 'success');
+                  }, 300);
+                }}
+                className="px-8 py-2 bg-[#1b4f9c] hover:bg-[#163d7a] text-white rounded-lg font-medium text-[14px] transition-colors"
+              >
+                Ya, Yakin
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL UPDATE DATA PENDAFTAR ===== */}
+      {isUpdateModalOpen && (
+        <div
+          className={`fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${isUpdateAnimating ? 'opacity-100' : 'opacity-0'}`}
+          onClick={closeUpdateModal}
+        >
+          <div
+            className={`bg-white rounded-xl shadow-2xl w-full max-w-[620px] overflow-hidden transform transition-all duration-300 ${isUpdateAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Modal */}
+            <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+              <h3 className="text-[18px] font-bold text-gray-800">Update Data Pendaftar</h3>
+              <button
+                onClick={closeUpdateModal}
+                className="text-gray-400 hover:text-gray-700 text-2xl font-semibold leading-none cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Body Modal */}
+            <div className="p-6 space-y-4 text-[13px] text-gray-700">
+              {/* File Upload Row */}
+              <div className="flex items-start gap-4">
+                <label className="w-28 font-bold text-[#1b4f9c] pt-1 shrink-0">File Upload</label>
+                <div className="space-y-1 flex-1">
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls"
+                    onChange={(e) => setSelectedFile(e.target.files[0])}
+                    className="text-[13px] text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:bg-gray-100 file:text-[13px] file:text-gray-700 file:cursor-pointer hover:file:bg-gray-200 cursor-pointer"
+                  />
+                  <p className="text-[12px] text-[#00c0ef]">xlsx, xls (maxsize: 5 MB)</p>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-100 my-2"></div>
+
+              {/* Ketentuan Update Excel */}
+              <div className="space-y-2">
+                <p className="font-normal text-gray-700">Ketentuan update excel:</p>
+                <ul className="list-disc pl-5 space-y-1.5 text-gray-600 leading-relaxed text-[13px]">
+                  <li>Pastikan susunan data file excel yang akan diupload sesuai dengan template yang bisa didownload.</li>
+                  <li>Ketika melakukan download template pastikan filter sudah sesuai yang dibutuhkan, begitu juga ketika upload file untuk update datanya.</li>
+                  <li>Excel Cell yang berwarna merah tidak boleh di edit.</li>
+                </ul>
+              </div>
+
+              <p className="text-[13px] text-gray-600 pt-1">Format import bisa didownload lewat button dibawah ini.</p>
+
+              {/* Tombol Download Template */}
+              <button
+                type="button"
+                onClick={() => showAlert('Template update excel pendaftar sedang diunduh.', 'Informasi', 'info')}
+                className="bg-[#00c0ef] hover:bg-[#00acd6] text-white px-3.5 py-1.5 rounded text-[13px] font-medium flex items-center gap-2 shadow-xs transition-colors"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
+                  <path d="M9 13h2v5a1 1 0 11-2 0v-5z" />
+                </svg>
+                <span>Download</span>
+              </button>
+            </div>
+
+            {/* Footer Modal */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!selectedFile) {
+                    showAlert('Silakan pilih file excel terlebih dahulu!', 'Perhatian', 'warning');
+                  } else {
+                    const fileName = selectedFile.name;
+                    closeUpdateModal();
+                    setTimeout(() => {
+                      showAlert(`Data pendaftar dari file "${fileName}" berhasil diupdate!`, 'Berhasil', 'success');
+                    }, 300);
+                  }
+                }}
+                className="bg-[#00a65a] hover:bg-[#008d4c] text-white px-4 py-2 rounded text-[13px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
+                  <path d="M9 13h2v5a1 1 0 11-2 0v-5z" />
+                </svg>
+                <span>Update</span>
+              </button>
+              <button
+                type="button"
+                onClick={closeUpdateModal}
+                className="bg-[#ef4444] hover:bg-[#dc2626] text-white px-4 py-2 rounded text-[13px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+              >
+                <span>&times;</span>
+                <span>Batal</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL KONFIRMASI RESET PASSWORD PENDAFTAR ===== */}
+      {isResetPassModalOpen && (
+        <div
+          className={`fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${isResetPassAnimating ? 'opacity-100' : 'opacity-0'}`}
+          onClick={closeResetPassModal}
+        >
+          <div
+            className={`bg-white rounded-xl shadow-2xl w-full max-w-[440px] overflow-hidden transform transition-all duration-300 ${isResetPassAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Body Modal */}
+            <div className="p-8 flex flex-col items-center text-center gap-4">
+              {/* Ikon Warning Oranye/Kuning */}
+              <div className="w-14 h-14 rounded-full bg-[#fff3cd] border-2 border-[#f59e0b] flex items-center justify-center">
+                <svg className="w-7 h-7 text-[#f59e0b]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+              </div>
+              <h3 className="text-[20px] font-bold text-gray-900">Konfirmasi</h3>
+              <p className="text-[14px] text-gray-600">Apakah anda yakin akan Reset Password Pendaftar All ?</p>
+            </div>
+
+            {/* Footer Tombol */}
+            <div className="px-8 pb-8 flex justify-center gap-3">
+              <button
+                onClick={closeResetPassModal}
+                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-[14px] transition-colors"
+              >
+                Batalkan
+              </button>
+              <button
+                onClick={() => {
+                  closeResetPassModal();
+                  setTimeout(() => {
+                    showAlert('Password semua pendaftar berhasil di-reset!', 'Berhasil', 'success');
+                  }, 300);
+                }}
+                className="px-8 py-2 bg-[#1b4f9c] hover:bg-[#163d7a] text-white rounded-lg font-medium text-[14px] transition-colors"
+              >
+                Ya, Yakin
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== CUSTOM ALERT MODAL (MENGGANTIKAN BROWSER ALERT SEHINGGA TIDAK MUNCUL "localhost says") ===== */}
+      {alertModal.isOpen && (
+        <div
+          className={`fixed inset-0 bg-black/50 z-[120] flex items-center justify-center p-4 transition-opacity duration-300 ${alertModal.isAnimating ? 'opacity-100' : 'opacity-0'}`}
+          onClick={closeAlert}
+        >
+          <div
+            className={`bg-white rounded-2xl shadow-2xl w-full max-w-[400px] overflow-hidden transform transition-all duration-300 flex flex-col items-center text-center p-7 ${alertModal.isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Ikon Berdasarkan Tipe */}
+            {alertModal.type === 'success' && (
+              <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center text-emerald-600 mb-4 shadow-sm">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            )}
+
+            {alertModal.type === 'warning' && (
+              <div className="w-16 h-16 rounded-full bg-[#fff3cd] border-2 border-[#f59e0b] flex items-center justify-center text-[#f59e0b] mb-4 shadow-sm">
+                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+              </div>
+            )}
+
+            {alertModal.type === 'info' && (
+              <div className="w-16 h-16 rounded-full bg-cyan-50 border-2 border-[#00c0ef] flex items-center justify-center text-[#00c0ef] mb-4 shadow-sm">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            )}
+
+            <h3 className="text-[20px] font-bold text-gray-900 mb-2">{alertModal.title}</h3>
+            <p className="text-[14px] text-gray-600 mb-6 leading-relaxed max-w-[320px]">{alertModal.message}</p>
+
+            <button
+              onClick={closeAlert}
+              className="px-10 py-2.5 bg-[#1b4f9c] hover:bg-[#163d7a] text-white rounded-lg font-semibold text-[14px] transition-all shadow-md active:scale-95"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}

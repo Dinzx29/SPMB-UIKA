@@ -15,6 +15,13 @@ const Navbar = () => {
   const profileRef = useRef(null);
   const [profilePos, setProfilePos] = useState({ top: 0, right: 0 });
 
+  // 🔥 STATE UNTUK DROPDOWN REKOGNISI PEMBELAJARAN LAMPAU (RPL)
+  const [isRplOpen, setIsRplOpen] = useState(false);
+  const [isRplAnimating, setIsRplAnimating] = useState(false);
+  const rplRef = useRef(null);
+  const [rplPos, setRplPos] = useState({ top: 0, left: 0 });
+  const [isLaporanOpen, setIsLaporanOpen] = useState(false);
+
   const handleProfileClick = () => {
     if (profileRef.current) {
       const rect = profileRef.current.getBoundingClientRect();
@@ -24,12 +31,47 @@ const Navbar = () => {
       });
     }
     
+    // Tutup dropdown RPL jika profil dibuka
+    if (isRplOpen) {
+      setIsRplAnimating(false);
+      setIsRplOpen(false);
+      setIsLaporanOpen(false);
+    }
+
     if (isProfileOpen) {
       setIsAnimating(false);
       setTimeout(() => setIsProfileOpen(false), 200);
     } else {
       setIsProfileOpen(true);
       setTimeout(() => setIsAnimating(true), 10);
+    }
+  };
+
+  const handleRplClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (rplRef.current) {
+      const rect = rplRef.current.getBoundingClientRect();
+      setRplPos({
+        top: rect.bottom + 6,
+        left: Math.max(16, rect.left)
+      });
+    }
+
+    // Tutup profil jika RPL dibuka
+    if (isProfileOpen) {
+      setIsAnimating(false);
+      setIsProfileOpen(false);
+    }
+
+    if (isRplOpen) {
+      setIsRplAnimating(false);
+      setTimeout(() => setIsRplOpen(false), 200);
+      setIsLaporanOpen(false);
+    } else {
+      setIsRplOpen(true);
+      setTimeout(() => setIsRplAnimating(true), 10);
     }
   };
 
@@ -42,10 +84,37 @@ const Navbar = () => {
           setTimeout(() => setIsProfileOpen(false), 200);
         }
       }
+
+      if (rplRef.current && !rplRef.current.contains(event.target)) {
+        const rplElement = document.getElementById('rpl-dropdown-portal');
+        if (rplElement && !rplElement.contains(event.target)) {
+          setIsRplAnimating(false);
+          setTimeout(() => setIsRplOpen(false), 200);
+          setIsLaporanOpen(false);
+        }
+      }
     }
+
+    function handleWindowChange() {
+      if (isRplOpen && rplRef.current) {
+        const rect = rplRef.current.getBoundingClientRect();
+        setRplPos({
+          top: rect.bottom + 6,
+          left: Math.max(16, rect.left)
+        });
+      }
+    }
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    window.addEventListener("scroll", handleWindowChange, { passive: true });
+    window.addEventListener("resize", handleWindowChange);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleWindowChange);
+      window.removeEventListener("resize", handleWindowChange);
+    };
+  }, [isRplOpen]);
 
   const handleLogout = () => {
     logout();
@@ -54,9 +123,13 @@ const Navbar = () => {
 
   const isActive = (path) => {
     if (path === '/admin/dashboard') return currentPath === path;
-    // Halaman Leads Maukuliah (/admin/list_leads) merupakan bagian dari menu Pendaftar
+    // Halaman Leads Maukuliah (/admin/list_leads) & Data Pendaftar (/admin/data_pendaftar) merupakan bagian dari menu Pendaftar
     if (path === '/admin/pendaftar') {
-      return currentPath.startsWith('/admin/pendaftar') || currentPath.startsWith('/admin/list_leads');
+      return currentPath.startsWith('/admin/pendaftar') || currentPath.startsWith('/admin/list_leads') || currentPath.startsWith('/admin/data_pendaftar');
+    }
+    // Halaman Pencarian Pendaftar (/admin/ods_pencarianpendaftar) merupakan bagian dari One Day Service
+    if (path === '/admin/one_day_service') {
+      return currentPath.startsWith('/admin/one_day_service') || currentPath.startsWith('/admin/ods_pencarianpendaftar');
     }
     return currentPath.startsWith(path);
   };
@@ -181,14 +254,28 @@ const Navbar = () => {
             </div>
           </Link>
           
-          <Link to="#" className={`flex items-center gap-1 ${getLinkClass('/rekognisi')}`}>
-            <div className="h-[36px] flex flex-col justify-center leading-[1.15]">
-              <span>Rekognisi Pembelajaran Lampau</span>
-            </div>
-            <svg className="w-3 h-3 text-white/80" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-            </svg>
-          </Link>
+          {/* 🔥 REKOGNISI PEMBELAJARAN LAMPAU DENGAN DROPDOWN & IKON BERGERAK (TANPA GARIS BAWAH SAAT DIBUKA) */}
+          <div ref={rplRef} className="relative flex items-center">
+            <button 
+              onClick={handleRplClick} 
+              className={`flex items-center gap-1.5 cursor-pointer outline-none transition-colors ${
+                currentPath.startsWith('/admin/rpl') || currentPath.startsWith('/admin/list_kesiapan_rpl')
+                  ? 'text-white border-b-[2px] border-white pb-1 font-medium'
+                  : 'text-white/95 border-b-[2px] border-transparent hover:text-white pb-1'
+              }`}
+            >
+              <div className="h-[36px] flex flex-col justify-center leading-[1.15] text-left">
+                <span>Rekognisi Pembelajaran Lampau</span>
+              </div>
+              <svg 
+                className={`w-3.5 h-3.5 text-white/90 transition-transform duration-300 ${isRplOpen ? 'rotate-180' : ''}`} 
+                fill="currentColor" 
+                viewBox="0 0 20 20"
+              >
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
           
           <div className={getDivClass('/pengaturan')}>
             <div className="h-[36px] flex items-center gap-1.5">
@@ -294,6 +381,157 @@ const Navbar = () => {
               </svg>
               <span className="text-[14px] font-semibold">Keluar</span>
             </button>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 🔥 DROPDOWN REKOGNISI PEMBELAJARAN LAMPAU (TEMA IJO PURE PERSIS NAVBAR) */}
+      {isRplOpen && createPortal(
+        <div 
+          id="rpl-dropdown-portal"
+          className={`fixed w-[310px] bg-[#047857] text-white rounded-xl shadow-2xl z-[90] overflow-visible origin-top-left transition-all duration-200 ease-out border border-white/20 ${
+            isRplAnimating ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible'
+          }`}
+          style={{
+            top: `${rplPos.top}px`,
+            left: `${rplPos.left}px`,
+          }}
+        >
+          {/* Header Judul Kategori */}
+          <div 
+            className="px-6 pt-5 pb-3"
+            onMouseEnter={() => setIsLaporanOpen(false)}
+          >
+            <h4 className="text-[11px] font-bold text-white/80 uppercase tracking-wider">
+              REKOGNISI PEMBELAJARAN LAMPAU
+            </h4>
+          </div>
+
+          <div className="border-t border-white/15 mx-6 mb-1"></div>
+
+          {/* Daftar Menu Items */}
+          <div className="py-1 text-[13.5px]">
+            <Link 
+              to="/admin/rpl/kesiapan" 
+              onMouseEnter={() => setIsLaporanOpen(false)}
+              onClick={() => { setIsRplAnimating(false); setTimeout(() => setIsRplOpen(false), 200); setIsLaporanOpen(false); }}
+              className="flex items-center px-6 py-3 text-white/95 hover:text-white hover:bg-white/10 font-normal transition-colors"
+            >
+              Kesiapan RPL dan Generate Mahasiswa
+            </Link>
+
+            <Link 
+              to="/admin/rpl/asesor" 
+              onMouseEnter={() => setIsLaporanOpen(false)}
+              onClick={() => { setIsRplAnimating(false); setTimeout(() => setIsRplOpen(false), 200); }}
+              className="flex items-center px-6 py-3 text-white/95 hover:text-white hover:bg-white/10 font-normal transition-colors"
+            >
+              Master Asesor RPL
+            </Link>
+
+            <Link 
+              to="/admin/rpl/seleksi" 
+              onMouseEnter={() => setIsLaporanOpen(false)}
+              onClick={() => { setIsRplAnimating(false); setTimeout(() => setIsRplOpen(false), 200); }}
+              className="flex items-center px-6 py-3 text-white/95 hover:text-white hover:bg-white/10 font-normal transition-colors"
+            >
+              Seleksi RPL
+            </Link>
+
+            {/* Menu Laporan dengan Submenu Flyout */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setIsLaporanOpen(true)}
+            >
+              <button 
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsLaporanOpen(prev => !prev);
+                }}
+                className={`w-full flex items-center justify-between px-6 py-3 text-white/95 hover:text-white transition-colors text-left cursor-pointer ${
+                  isLaporanOpen ? 'bg-white/15 text-white font-medium' : 'hover:bg-white/10 font-normal'
+                }`}
+              >
+                <span>Laporan</span>
+                <svg className={`w-4 h-4 text-white/80 transition-transform ${isLaporanOpen ? 'translate-x-0.5' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* 🔥 SUBMENU FLYOUT LAPORAN (PANEL PUTIH SESUAI PERSIS FOTO SIAKAD UIKA) */}
+          <div 
+            className={`absolute left-[calc(100%-1px)] top-[42px] w-[340px] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-100 origin-top-left transition-all duration-200 ease-out z-[95] overflow-hidden before:absolute before:-left-3 before:top-0 before:w-3 before:h-full before:content-[''] ${
+              isLaporanOpen 
+                ? 'opacity-100 scale-100 translate-x-0 visible pointer-events-auto' 
+                : 'opacity-0 scale-95 -translate-x-1 invisible pointer-events-none'
+            }`}
+            onMouseEnter={() => setIsLaporanOpen(true)}
+            onMouseLeave={() => setIsLaporanOpen(false)}
+          >
+            {/* Header Judul Kategori Laporan */}
+            <div className="px-6 pt-5 pb-3">
+              <h5 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                LAPORAN
+              </h5>
+            </div>
+
+            <div className="border-t border-gray-100 mx-6 mb-1"></div>
+
+            {/* Daftar 4 Menu Laporan */}
+            <div className="py-1 text-[13px]">
+              <Link 
+                to="/admin/rpl/rekap-pendaftar"
+                onClick={() => { 
+                  setIsRplAnimating(false); 
+                  setTimeout(() => setIsRplOpen(false), 200); 
+                  setIsLaporanOpen(false); 
+                }}
+                className="block px-6 py-3.5 text-gray-700 hover:text-[#047857] hover:bg-gray-50/80 font-normal transition-colors border-b border-gray-100/80"
+              >
+                Rekapitulasi Pendaftar RPL
+              </Link>
+
+              <Link 
+                to="/admin/rpl/sierra"
+                onClick={() => { 
+                  setIsRplAnimating(false); 
+                  setTimeout(() => setIsRplOpen(false), 200); 
+                  setIsLaporanOpen(false); 
+                }}
+                className="block px-6 py-3.5 text-gray-700 hover:text-[#047857] hover:bg-gray-50/80 font-normal transition-colors border-b border-gray-100/80"
+              >
+                Formulir Penyelenggaraan RPL ke SIERRA
+              </Link>
+
+              <Link 
+                to="/admin/rpl/sk-penerimaan"
+                onClick={() => { 
+                  setIsRplAnimating(false); 
+                  setTimeout(() => setIsRplOpen(false), 200); 
+                  setIsLaporanOpen(false); 
+                }}
+                className="block px-6 py-3.5 text-gray-700 hover:text-[#047857] hover:bg-gray-50/80 font-normal transition-colors border-b border-gray-100/80"
+              >
+                SK Penerimaan Mahasiswa RPL
+              </Link>
+
+              <Link 
+                to="/admin/rpl/hasil-penilaian"
+                onClick={() => { 
+                  setIsRplAnimating(false); 
+                  setTimeout(() => setIsRplOpen(false), 200); 
+                  setIsLaporanOpen(false); 
+                }}
+                className="block px-6 py-3.5 text-gray-700 hover:text-[#047857] hover:bg-gray-50/80 font-normal transition-colors"
+              >
+                Hasil Penilaian Seleksi RPL
+              </Link>
+            </div>
           </div>
         </div>,
         document.body
